@@ -6,14 +6,12 @@ import com.javamentor.qa.platform.dao.util.SingleResultUtil;
 import com.javamentor.qa.platform.models.entity.question.answer.Answer;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Optional;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 import javax.persistence.Query;
-import java.util.Optional;
+
 
 
 @Repository
@@ -26,7 +24,9 @@ public class AnswerDaoImpl extends ReadWriteDaoImpl<Answer, Long> implements Ans
     @Transactional
     public void markAnswerAsDeleted(Long id) {
         entityManager.createQuery("""
-                UPDATE Answer a SET a.isDeleted = true WHERE a.id = :id
+                UPDATE Answer a 
+                SET a.isDeleted = true 
+                WHERE a.id = :id
                 """)
                 .setParameter("id", id)
                 .executeUpdate();

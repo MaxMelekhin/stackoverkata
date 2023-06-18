@@ -10,4 +10,8 @@ public interface ReputationDao extends ReadWriteDao<Reputation, Long> {
 
     Optional<Reputation> getReputationByAnswerIdAndUserId(Long senderId, Long answerId);
     Optional<Reputation> reputationExists (User sender, Long answerId);
+
+    Optional<Reputation> getReputationByQuestionIdAndUserId(Long senderId, Long questionId);
+
+
 }

@@ -52,12 +52,10 @@ public class VoteAnswerServiceImpl extends ReadWriteServiceImpl<VoteAnswer, Long
             voteAnswer = optionalVoteAnswer.get();
             voteAnswerDao.update(voteAnswer);
         }
-
     }
 
     @Override
     public Long getAllTheVotesForThisAnswer(Long answerId) {
-
         return voteAnswerDao.getAllTheVotesForThisAnswer(answerId);
     }
 }

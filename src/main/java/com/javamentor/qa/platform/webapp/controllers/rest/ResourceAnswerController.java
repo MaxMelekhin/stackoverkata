@@ -180,7 +180,7 @@ public class ResourceAnswerController {
 
         voteAnswerService.voteUpToAnswer(user, answer);
 
-        reputationService.addReputaton(user, answer);
+        reputationService.addReputation(user, answer);
 
 
 

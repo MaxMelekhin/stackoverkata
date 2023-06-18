@@ -1,5 +1,6 @@
 package com.javamentor.qa.platform.service.impl.model;
 
+import com.javamentor.qa.platform.models.entity.question.Question;
 import com.javamentor.qa.platform.models.entity.question.answer.Answer;
 import com.javamentor.qa.platform.models.entity.user.User;
 import com.javamentor.qa.platform.models.entity.user.reputation.Reputation;
@@ -22,11 +23,11 @@ import java.util.Optional;
 public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long> implements ReputationService {
     private final ReputationDao reputationDao;
     private final AnswerDao answerDao;
-    private static final int DOWN_VOTE_POINTS = - 5;
+    private static final int DOWN_VOTE_POINTS = -5;
+
 
     public ReputationServiceImpl(ReadWriteDao<Reputation, Long> readWriteDao,
-                                 ReputationDao reputationDao, AnswerDao answerDao)
-    {
+                                 ReputationDao reputationDao, AnswerDao answerDao) {
 
         super(readWriteDao);
         this.reputationDao = reputationDao;
@@ -35,7 +36,7 @@ public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long
 
     @Override
     @Transactional
-    public void addReputaton(User sender, Answer answer) {
+    public void addReputation(User sender, Answer answer) {
 
         Reputation reputation;
 
@@ -61,7 +62,29 @@ public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long
 
     @Override
     @Transactional
-    public void updateCountByDown (User sender, Long answerId) {
+    public void addReputationForQuestion(User sender, Question question) {
+        Reputation reputation;
+        Optional<Reputation> optionalReputation =
+                reputationDao.getReputationByQuestionIdAndUserId(sender.getId(), question.getId());
+        if (optionalReputation.isEmpty()) {
+            reputation = new Reputation();
+            reputation.setPersistDate(LocalDateTime.now());
+            reputation.setAuthor(question.getUser());
+            reputation.setSender(sender);
+            reputation.setCount(10);
+            reputation.setType(ReputationType.VoteAnswer);
+            reputation.setQuestion(question);
+            reputationDao.persist(reputation);
+        } else {
+            reputation = optionalReputation.get();
+            reputationDao.update(reputation);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void updateCountByDown(User sender, Long answerId) {
 
         Reputation newReputation = new Reputation();
         Integer downCount;
@@ -89,7 +112,7 @@ public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long
 
             reputationDao.persist(newReputation);
         }
-
-
     }
+
+
 }

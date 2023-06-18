@@ -8,6 +8,8 @@ import com.javamentor.qa.platform.service.impl.repository.ReadWriteServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class QuestionServiceImpl extends ReadWriteServiceImpl<Question, Long> implements QuestionService {
 
@@ -22,5 +24,11 @@ public class QuestionServiceImpl extends ReadWriteServiceImpl<Question, Long> im
     @Transactional(readOnly = true)
     public Long getCountQuestion() {
         return questionDao.getCountQuestion();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Question> getQuestionById(Long id, Long userId) {
+        return questionDao.getQuestionById(id, userId);
     }
 }

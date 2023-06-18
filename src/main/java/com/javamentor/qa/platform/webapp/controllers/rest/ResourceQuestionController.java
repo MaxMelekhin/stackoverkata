@@ -8,8 +8,11 @@ import com.javamentor.qa.platform.models.entity.user.User;
 import com.javamentor.qa.platform.service.abstracts.dto.CommentDtoService;
 import com.javamentor.qa.platform.service.abstracts.dto.QuestionDtoService;
 import com.javamentor.qa.platform.service.abstracts.model.QuestionService;
+import com.javamentor.qa.platform.service.abstracts.model.ReputationService;
 import com.javamentor.qa.platform.service.abstracts.model.TagService;
 import com.javamentor.qa.platform.service.abstracts.model.UserService;
+import com.javamentor.qa.platform.service.abstracts.model.VoteQuestionService;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user/question")
@@ -35,15 +39,19 @@ public class ResourceQuestionController {
     private final QuestionService questionService;
     private final QuestionDtoService questionDtoService;
     private final TagService tagService;
-    private  final CommentDtoService commentDtoService;
+    private final CommentDtoService commentDtoService;
+    private final ReputationService reputationService;
+    private final VoteQuestionService voteQuestionService;
 
     @Autowired
-    public ResourceQuestionController(UserService userService, QuestionService questionService, QuestionDtoService questionDtoService, TagService tagService, CommentDtoService commentDtoService) {
+    public ResourceQuestionController(UserService userService, QuestionService questionService, QuestionDtoService questionDtoService, TagService tagService, CommentDtoService commentDtoService, ReputationService reputationService, VoteQuestionService voteQuestionService) {
         this.userService = userService;
         this.questionService = questionService;
         this.questionDtoService = questionDtoService;
         this.tagService = tagService;
         this.commentDtoService = commentDtoService;
+        this.reputationService = reputationService;
+        this.voteQuestionService = voteQuestionService;
     }
 
     @GetMapping("/{id}/comment")
@@ -84,7 +92,7 @@ public class ResourceQuestionController {
     @Operation(summary = "Добавление нового вопроса")
     @ApiResponse(responseCode = "200", description = "Вопрос добавлен")
     @ApiResponse(responseCode = "400", description = "Ошибка введенных данных")
-    public ResponseEntity<QuestionDto> questionCreate (@RequestBody QuestionCreateDto questionCreateDto) {
+    public ResponseEntity<QuestionDto> questionCreate(@RequestBody QuestionCreateDto questionCreateDto) {
         // TODO: Доставать юзера из секьюрити
         // User user = userService.getByEmail(principal.getName()).orElse(null);
 
@@ -101,6 +109,33 @@ public class ResourceQuestionController {
         questionService.persist(question);
 
         return new ResponseEntity<>(questionDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/{questionId}/upVote")
+    @ApiOperation(
+            value = "проголосовать за Question, голосование «ЗА» вопрос",
+            notes = """
+                    Когда пользователь голосует за вопрос увеличивает количество голосов на +1, а так же репутацию автору вопроса
+                    за up +10 к репутации и возвращает общее количество голосов
+                    """)
+    @ApiResponse(responseCode = "200", description = "Голосование успешно")
+    @ApiResponse(responseCode = "404", description = "Вопрос не найден")
+    @ApiResponse(responseCode = "401", description = "Пользователь не авторизирован")
+    public ResponseEntity<Long> getAllVotesForQuestion(@PathVariable Long questionId, @AuthenticationPrincipal User user) {
+
+        Optional<Question> questionById = questionService.getQuestionById(questionId, user.getId());
+
+        if (questionById.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Question question = questionById.get();
+
+        reputationService.addReputationForQuestion(user, question);
+
+        voteQuestionService.voteUpQuestion(user, question);
+
+        return new ResponseEntity<>(voteQuestionService.getAllVotesForQuestion(question.getId()), HttpStatus.OK);
     }
 }
 
