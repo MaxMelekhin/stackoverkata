@@ -5,7 +5,8 @@ function isSidebar(currentPath) {
         "/questions",
         "/tag_page",
         "/question",
-        "/profile"
+        "/profile",
+        "/users"
     ];
     return sidebarPages.includes(currentPath);
 }
@@ -33,7 +34,7 @@ const before = `
                 </div>
                 <div class="row">
                     <div class="col-3"></div>
-                    <div class="col-9  text-start nav-div pe-0" ><a href="#">Участники</a></div>
+                    <div class="col-9  text-start nav-div pe-0" ><a href="/users">Участники</a></div>
                 </div>
                 <div class="row">
                     <div class="col-3"></div>
