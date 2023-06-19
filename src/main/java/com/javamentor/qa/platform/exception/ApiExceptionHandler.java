@@ -12,4 +12,9 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
     }
+
+    @ExceptionHandler(value = DtoEntityNotFoundException.class)
+    public ResponseEntity<String> handleDtoEntityNotFoundException(DtoEntityNotFoundException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

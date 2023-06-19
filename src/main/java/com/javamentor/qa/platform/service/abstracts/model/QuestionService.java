@@ -9,4 +9,5 @@ public interface QuestionService extends ReadWriteService<Question, Long> {
     Long getCountQuestion();
 
     Optional<Question> getQuestionById(Long id, Long userId);
+
 }

@@ -167,12 +167,12 @@ public class ResourceAnswerController {
     })
     public ResponseEntity<Long> getTotalVotesCount(
             @ApiParam(name = "id", value = "ID ответа", required = true)
-            @PathVariable() Long id,
+            @PathVariable Long id,
             @AuthenticationPrincipal User user) {
 
         Optional<Answer> optionalAnswer = answerService.getAnswerById(id, user.getId());
 
-        if (!optionalAnswer.isPresent()) {
+        if (optionalAnswer.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -181,8 +181,6 @@ public class ResourceAnswerController {
         voteAnswerService.voteUpToAnswer(user, answer);
 
         reputationService.addReputation(user, answer);
-
-
 
         return new ResponseEntity<>(voteAnswerService.getAllTheVotesForThisAnswer(answer.getId()), HttpStatus.OK);
     }

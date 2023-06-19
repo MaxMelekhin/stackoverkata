@@ -1,19 +1,17 @@
 package com.javamentor.qa.platform.dao.impl.dto;
 
 import com.javamentor.qa.platform.dao.abstracts.dto.UserDtoDao;
-import com.javamentor.qa.platform.dao.impl.repository.ReadWriteDaoImpl;
+import com.javamentor.qa.platform.dao.util.SingleResultUtil;
 import com.javamentor.qa.platform.models.dto.UserDto;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Repository
-public class UserDtoDaoImpl extends ReadWriteDaoImpl<UserDto, Long> implements UserDtoDao {
+public class UserDtoDaoImpl implements UserDtoDao {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -35,12 +33,6 @@ public class UserDtoDaoImpl extends ReadWriteDaoImpl<UserDto, Long> implements U
                 where u.id = :id
                 """, UserDto.class);
         query.setParameter("id", id);
-        try {
-            UserDto userDto = query.getSingleResult();
-            userDto.setListTop3TagDto(new ArrayList<>());      //<------------------заглушка
-            return Optional.of(userDto);
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
+        return SingleResultUtil.getSingleResultOrNull(query);
     }
 }

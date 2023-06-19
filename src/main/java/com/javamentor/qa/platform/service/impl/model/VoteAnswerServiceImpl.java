@@ -40,17 +40,13 @@ public class VoteAnswerServiceImpl extends ReadWriteServiceImpl<VoteAnswer, Long
     @Transactional
     public void voteUpToAnswer(User userWhoVotes, Answer answer) {
 
-        VoteAnswer voteAnswer;
-
         Optional <VoteAnswer> optionalVoteAnswer =
                 voteAnswerDao.getVoteAnswerByAnswerIdAndUserId(answer.getId(), userWhoVotes.getId());
-        if (!optionalVoteAnswer.isPresent()) {
 
-            voteAnswer = new VoteAnswer(userWhoVotes, answer, VoteType.UP);
-            voteAnswerDao.persist(voteAnswer);
+        if (optionalVoteAnswer.isEmpty()) {
+            voteAnswerDao.persist(new VoteAnswer(userWhoVotes, answer, VoteType.UP));
         } else {
-            voteAnswer = optionalVoteAnswer.get();
-            voteAnswerDao.update(voteAnswer);
+            voteAnswerDao.update(optionalVoteAnswer.get());
         }
     }
 
