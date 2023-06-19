@@ -1,5 +1,6 @@
 package com.javamentor.qa.platform.webapp.controllers.rest;
 
+
 import com.javamentor.qa.platform.models.dto.QuestionCommentDto;
 import com.javamentor.qa.platform.models.dto.QuestionCreateDto;
 import com.javamentor.qa.platform.models.dto.QuestionDto;
@@ -70,16 +71,16 @@ public class ResourceQuestionController {
         return new ResponseEntity<>(commentDtoService.getAllQuestionCommentDtoById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Получение данных о вопросе по его уникальному идентификатору (id)")
-    @ApiResponse(responseCode = "200", description = "Запрос успешно выполнен")
-    @ApiResponse(responseCode = "404", description = "Вопрос по данному id не найден")
-    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable Long id,
-                                                       @AuthenticationPrincipal User user) {
+@GetMapping("/{id}")
+@Operation(summary = "Получение данных о вопросе по его уникальному идентификатору (id)")
+@ApiResponse(responseCode = "200", description = "Запрос успешно выполнен")
+@ApiResponse(responseCode = "404", description = "Вопрос по данному id не найден")
+public ResponseEntity<QuestionDto> getQuestionById(@PathVariable @ApiParam(name = "questionId", value = "id вопроса") Long id,
+                                                   @AuthenticationPrincipal User user) {
 
-        return questionDtoService.getById(id, user.getId()).map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(new QuestionDto(), HttpStatus.NOT_FOUND));
-    }
+    return questionDtoService.getById(id, user.getId()).map(ResponseEntity::ok)
+            .orElseGet(() -> new ResponseEntity<>(new QuestionDto(), HttpStatus.NOT_FOUND));
+}
 
 
     @GetMapping("/count")
