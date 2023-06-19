@@ -4,14 +4,11 @@ import com.javamentor.qa.platform.models.entity.question.answer.Answer;
 import com.javamentor.qa.platform.models.entity.user.User;
 import com.javamentor.qa.platform.models.entity.user.reputation.Reputation;
 import com.javamentor.qa.platform.models.entity.user.reputation.ReputationType;
-
 import com.javamentor.qa.platform.dao.abstracts.repository.ReadWriteDao;
 import com.javamentor.qa.platform.service.impl.repository.ReadWriteServiceImpl;
 import com.javamentor.qa.platform.dao.abstracts.model.AnswerDao;
-
 import com.javamentor.qa.platform.dao.abstracts.model.ReputationDao;
 import com.javamentor.qa.platform.service.abstracts.model.ReputationService;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,4 +89,10 @@ public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long
 
 
     }
+@Override
+@Transactional
+public Optional<Reputation> getReputationByUserIdQuestionIdReputationType(Long userId, Long questionId, ReputationType reputationType) {
+    return reputationDao.getReputationByUserIdQuestionIdReputationType(userId, questionId, reputationType);
+
+}
 }

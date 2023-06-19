@@ -4,12 +4,16 @@ import com.javamentor.qa.platform.models.dto.QuestionCommentDto;
 import com.javamentor.qa.platform.models.dto.QuestionCreateDto;
 import com.javamentor.qa.platform.models.dto.QuestionDto;
 import com.javamentor.qa.platform.models.entity.question.Question;
+import com.javamentor.qa.platform.models.entity.question.VoteType;
 import com.javamentor.qa.platform.models.entity.user.User;
 import com.javamentor.qa.platform.service.abstracts.dto.CommentDtoService;
 import com.javamentor.qa.platform.service.abstracts.dto.QuestionDtoService;
 import com.javamentor.qa.platform.service.abstracts.model.QuestionService;
 import com.javamentor.qa.platform.service.abstracts.model.TagService;
 import com.javamentor.qa.platform.service.abstracts.model.UserService;
+import com.javamentor.qa.platform.service.abstracts.model.VoteQuestionService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,13 +41,20 @@ public class ResourceQuestionController {
     private final TagService tagService;
     private  final CommentDtoService commentDtoService;
 
+    private final VoteQuestionService voteQuestionService;
+
+
+
     @Autowired
-    public ResourceQuestionController(UserService userService, QuestionService questionService, QuestionDtoService questionDtoService, TagService tagService, CommentDtoService commentDtoService) {
+    public ResourceQuestionController(UserService userService, QuestionService questionService,
+                                      QuestionDtoService questionDtoService, TagService tagService,
+                                      CommentDtoService commentDtoService, VoteQuestionService voteQuestionService) {
         this.userService = userService;
         this.questionService = questionService;
         this.questionDtoService = questionDtoService;
         this.tagService = tagService;
         this.commentDtoService = commentDtoService;
+        this.voteQuestionService = voteQuestionService;
     }
 
     @GetMapping("/{id}/comment")
@@ -102,5 +113,18 @@ public class ResourceQuestionController {
 
         return new ResponseEntity<>(questionDto, HttpStatus.OK);
     }
+
+@ApiOperation(value = "Голосование против вопроса")
+@ApiResponse(responseCode = "200", description = "Запрос успешно выполнен")
+@ApiResponse(responseCode = "404", description = "Вопрос по данному id не найден")
+@PostMapping("/{questionId}/downVote")
+public ResponseEntity<Long> downVoteQuestion(@ApiParam(name = "questionId", value = "id вопроса") @PathVariable Long questionId,
+                                                @AuthenticationPrincipal User user) {
+    if (questionService.getById(questionId).isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    voteQuestionService.createVoteDownQuestion(user, questionService.getById(questionId).get(), VoteType.DOWN);
+    return new ResponseEntity<>(voteQuestionService.getSumUpAndDownVotes(questionService.getById(questionId).get()), HttpStatus.OK);
+}
 }
 
