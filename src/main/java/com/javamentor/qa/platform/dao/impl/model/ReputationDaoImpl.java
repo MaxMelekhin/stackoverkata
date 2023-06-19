@@ -5,6 +5,7 @@ import com.javamentor.qa.platform.models.entity.user.reputation.Reputation;
 import com.javamentor.qa.platform.dao.abstracts.model.ReputationDao;
 import com.javamentor.qa.platform.dao.impl.repository.ReadWriteDaoImpl;
 import com.javamentor.qa.platform.dao.util.SingleResultUtil;
+import com.javamentor.qa.platform.models.entity.user.reputation.ReputationType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +16,8 @@ import java.util.Optional;
 @Repository
 public class ReputationDaoImpl extends ReadWriteDaoImpl<Reputation, Long> implements ReputationDao {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+@PersistenceContext
+private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -43,4 +44,19 @@ public class ReputationDaoImpl extends ReadWriteDaoImpl<Reputation, Long> implem
                         .setParameter("answerId", answerId)
                         .setParameter("senderId", senderId));
     }
+
+@Override
+public Optional<Reputation> getReputationByUserIdQuestionIdReputationType(Long userId, Long questionId, ReputationType reputationType) {
+    return SingleResultUtil.getSingleResultOrNull(
+            entityManager.createQuery(""" 
+                            from Reputation r 
+                            WHERE r.author.id = : userId AND
+                            r.question.id = : questionId AND
+                            r.type = : reputationType
+                               
+                            """, Reputation.class)
+                    .setParameter("userId", userId)
+                    .setParameter("questionId", questionId)
+                    .setParameter("reputationType", reputationType));
+}
 }
