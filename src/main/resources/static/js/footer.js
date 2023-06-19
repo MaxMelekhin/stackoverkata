@@ -5,7 +5,8 @@ function isFooter(currentPath) {
         "/questions",
         "/tag_page",
         "/question",
-        "/profile"
+        "/profile",
+        "/users"
     ];
     return sidebarPages.includes(currentPath);
 }
