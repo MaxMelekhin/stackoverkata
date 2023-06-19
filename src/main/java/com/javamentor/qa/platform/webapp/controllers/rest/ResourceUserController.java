@@ -1,5 +1,6 @@
 package com.javamentor.qa.platform.webapp.controllers.rest;
 
+import com.javamentor.qa.platform.exception.DtoEntityNotFoundException;
 import com.javamentor.qa.platform.models.dto.UserDto;
 import com.javamentor.qa.platform.service.abstracts.dto.UserDtoService;
 import io.swagger.annotations.ApiOperation;
@@ -29,12 +30,12 @@ public class ResourceUserController {
             @ApiResponse(code = 200, message = "Успешно получен экземпляр userDto", response = UserDto.class),
             @ApiResponse(code = 401, message = "Пользователь не авторизирован"),
             @ApiResponse(code = 403, message = "Доступ запрещен"),
-            @ApiResponse(code = 404, message = "Ответ не найден")
+            @ApiResponse(code = 404, message = "Пользователь с заданным ID не найден")
     })
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserDtoById(@PathVariable Long id) {
-        return userDtoService.getUserDtoById(id)
+        return userDtoService.getById(id)
                 .map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(new UserDto(), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new DtoEntityNotFoundException("Пользователь с заданным ID не найден"));
     }
 }
