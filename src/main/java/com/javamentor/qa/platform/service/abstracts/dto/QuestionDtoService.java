@@ -7,7 +7,7 @@ import com.javamentor.qa.platform.models.entity.user.User;
 import java.util.Optional;
 
 public interface QuestionDtoService {
-    Optional<QuestionDto> getById(Long questionId, long authorizedUserId);
+    Optional<QuestionDto> getById(Long questionId, Long authorizedUserId);
 
     QuestionDto createNewQuestionDto(QuestionCreateDto questionCreateDto, User user);
 }
