@@ -42,7 +42,7 @@ public class ReputationServiceImpl extends ReadWriteServiceImpl<Reputation, Long
         Optional<Reputation> optionalReputation =
                 reputationDao.getReputationByAnswerIdAndUserId(sender.getId(), answer.getId());
 
-        if (!optionalReputation.isPresent()) {
+        if (optionalReputation.isEmpty()) {
 
             reputation = new Reputation();
             reputation.setPersistDate(LocalDateTime.now());
